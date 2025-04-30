@@ -53,6 +53,11 @@
             <div class="text-center mt-4">
               <a href="Menu.html" class="btn btn-primary">Regresar al Menú</a>
             </div>
+
+            <!-- Botón para mostrar alerta manualmente -->
+            <div class="text-center mt-4">
+              <button id="btnMostrarAlerta" class="btn btn-danger">Mostrar Alerta de Temperatura Alta</button>
+            </div>
           </div>
         </div>
       </div>
@@ -165,6 +170,9 @@
       estadoSpan.textContent = estado;
       estadoSpan.className = "fw-bold " + (estado === "Estable" ? "text-success" : estado === "Mejorando" ? "text-warning" : "text-danger");
 
+      // Nivel numérico representativo
+      document.getElementById("numeroEstado").textContent = estado === "Estable" ? "100" : estado === "Mejorando" ? "75" : "40";
+
       // Mostrar modal si temperatura > 38 cada minuto
       const ahora = Date.now();
       if (nuevo.temperatura > 38 && (!modalShownAt || (ahora - modalShownAt > 60000))) {
@@ -174,6 +182,12 @@
       }
 
     }, 1000);
+
+    // Mostrar el modal al presionar el botón
+    document.getElementById('btnMostrarAlerta').addEventListener('click', function() {
+      const modal = new bootstrap.Modal(document.getElementById('modalInstrucciones'));
+      modal.show();
+    });
   </script>
 
   <!-- Bootstrap Bundle -->
