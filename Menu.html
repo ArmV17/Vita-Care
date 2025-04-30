@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VitalCare</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #669bbc;
+    }
+    .input-group-text {
+      width: 180px;
+      justify-content: center;
+    }
+    .btn-signos {
+      background-color: #fdf0d5;
+      color: black;
+    }
+    .btn-eliminar {
+      background-color: #780000;
+      color: white;
+    }
+    .table-container {
+      margin-top: 75px;
+    }
+    .form-control {
+      height: 45px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm px-4">
+  <a class="navbar-brand d-flex align-items-center" href="#">
+    <img src="img/logo.png" alt="Logo" width="40" height="40" class="me-2">
+    VitalCare
+  </a>
+  <div class="ms-auto d-flex align-items-center">
+    <span class="me-3 fw-bold">Juan Pérez</span>
+    <a href="index.html" class="btn btn-outline-danger">
+      <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+    </a>
+  </div>
+</nav>
+
+<!-- Contenedor principal -->
+<div class="container mt-5">
+  <div class="row">
+    
+    <!-- Formulario Card -->
+    <div class="col-md-6 d-flex justify-content-center">
+      <div class="card log">
+        <div class="card-body text-center">
+          <h1 class="mb-4">Agregar Paciente</h1>
+          
+          <!-- Nombre -->
+          <div class="input-group mb-3">
+            <span class="input-group-text">Nombre</span>
+            <input type="text" class="form-control" placeholder="Nombre Completo">
+          </div>
+
+          <!-- Parámetros -->
+          <h5 class="mb-3">Parámetros</h5>
+          <div class="input-group mb-2">
+            <span class="input-group-text">Frecuencia cardiaca</span>
+            <input type="number" class="form-control" placeholder="Ej. 72">
+          </div>
+          <div class="input-group mb-2">
+            <span class="input-group-text">Oxígeno en la sangre (%)</span>
+            <input type="number" class="form-control" placeholder="Ej. 98">
+          </div>
+          <div class="input-group mb-2">
+            <span class="input-group-text">Presión arterial</span>
+            <input type="number" class="form-control" placeholder="Ej. 120">
+          </div>
+          <div class="input-group mb-4">
+            <span class="input-group-text">Ritmo cardiaco</span>
+            <input type="number" class="form-control" placeholder="Ej. 70">
+          </div>
+
+          <!-- Botones -->
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-primary">
+              <i class="bi bi-smartwatch"></i> Conectar Smartwatch
+            </button>
+            <button type="button" class="btn btn-success btn-agregar">
+              <i class="bi bi-person-plus"></i> Agregar al Paciente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Pacientes -->
+    <div class="col-md-6 table-container">
+      <h3 class="mb-3">Lista de Pacientes</h3>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre Completo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>María López Ramírez</td>
+              <td>
+                <button class="btn btn-signos btn-sm me-2">Signos</button>
+                <button class="btn btn-eliminar btn-sm">Eliminar</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Carlos Hernández Ruiz</td>
+              <td>
+                <button class="btn btn-signos btn-sm me-2">Signos</button>
+                <button class="btn btn-eliminar btn-sm">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Funcionalidad JS -->
+<script>
+  // Redirigir al hacer clic en "Signos"
+  function asignarEventosSignos(boton) {
+    boton.addEventListener('click', () => {
+      window.location.href = 'Signos.html';
+    });
+  }
+
+  // Eliminar fila
+  function asignarEventosEliminar(boton) {
+    boton.addEventListener('click', function () {
+      const row = this.closest('tr');
+      if (confirm('¿Estás seguro de que deseas eliminar este paciente?')) {
+        row.remove();
+      }
+    });
+  }
+
+  // Inicializar botones existentes
+  document.querySelectorAll('.btn-signos').forEach(asignarEventosSignos);
+  document.querySelectorAll('.btn-eliminar').forEach(asignarEventosEliminar);
+
+  // Agregar nuevo paciente
+  document.querySelector('.btn-agregar').addEventListener('click', () => {
+    const nombreInput = document.querySelector('input[placeholder="Nombre Completo"]');
+    const nombre = nombreInput.value.trim();
+
+    if (!nombre) {
+      alert('Por favor ingresa el nombre del paciente.');
+      return;
+    }
+
+    const tbody = document.querySelector('table tbody');
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+      <td>${nombre}</td>
+      <td>
+        <button class="btn btn-signos btn-sm me-2">Signos</button>
+        <button class="btn btn-eliminar btn-sm">Eliminar</button>
+      </td>
+    `;
+    tbody.appendChild(fila);
+
+    // Asignar eventos a los nuevos botones
+    asignarEventosSignos(fila.querySelector('.btn-signos'));
+    asignarEventosEliminar(fila.querySelector('.btn-eliminar'));
+
+    // Limpiar campo
+    nombreInput.value = '';
+  });
+</script>
+
+</body>
+</html>

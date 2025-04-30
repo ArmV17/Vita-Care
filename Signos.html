@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VitalCare</title>
+
+  <!-- Bootstrap y Chart.js -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background-color: #669bbc;
+    }
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm px-4">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="img/logo.png" alt="Logo" width="40" height="40" class="me-2">
+      VitalCare
+    </a>
+    <div class="ms-auto d-flex align-items-center">
+      <span class="me-3 fw-bold">Juan Pérez</span>
+      <a href="index.html" class="btn btn-outline-danger">
+        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+      </a>
+    </div>
+  </nav>
+
+  <!-- Contenedor principal -->
+  <div class="container mt-4">
+    <div class="row justify-content-center mb-3">
+      <div class="col-md-10">
+        <div class="card p-3">
+          <div class="card-body">
+            <h4 class="card-title text-center mb-4">Signos Vitales en Tiempo Real</h4>
+            <canvas id="vitalsChart" height="150"></canvas>
+
+            <!-- Estado del paciente -->
+            <div class="mt-4">
+              <h5>Estado del Paciente: <span id="estadoPaciente" class="fw-bold text-primary">Analizando...</span></h5>
+            </div>
+
+            <!-- Botón para regresar al menú -->
+            <div class="text-center mt-4">
+              <a href="Menu.html" class="btn btn-primary">Regresar al Menú</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Alerta Temperatura Alta -->
+  <div class="modal fade" id="modalInstrucciones" tabindex="-1" aria-labelledby="modalInstruccionesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content p-3">
+        <div class="modal-header">
+          <h5 class="modal-title text-danger" id="modalInstruccionesLabel">Temperatura Alta Detectada</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <h5 class="text-danger">¿Qué hacer cuando hay fiebre?</h5>
+          <ul>
+            <li>🥤 Tomar mucho líquido: previene la deshidratación.</li>
+            <li>👕 Usar ropa liviana.</li>
+            <li>🛏️ Usar una manta liviana si tienes frío.</li>
+            <li>🧊 Aplicar compresas húmedas en la frente.</li>
+            <li>🛁 Tomar baños de agua tibia.</li>
+          </ul>
+          <h4 class="text-warning"><i class="bi bi-exclamation-triangle-fill"></i> Qué NO hacer</h4>
+          <ul>
+            <li>🚫 No uses alcohol sobre la piel.</li>
+            <li>🚿 Evita baños fríos.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const ctx = document.getElementById("vitalsChart").getContext("2d");
+    const historyLength = 30;
+    let modalShownAt = null;
+    let ultimoEstado = "";
+
+    const datasets = [
+      { label: "Frecuencia Cardiaca", borderColor: "#d00000", backgroundColor: "#d00000", data: [] },
+      { label: "Oxigenación", borderColor: "#3a86ff", backgroundColor: "#3a86ff", data: [] },
+      { label: "Presión Arterial", borderColor: "#ffba08", backgroundColor: "#ffba08", data: [] },
+      { label: "Ritmo Cardiaco", borderColor: "#52b788", backgroundColor: "#52b788", data: [] },
+      { label: "Temperatura", borderColor: "#f94144", backgroundColor: "#f94144", pointRadius: 4, data: [] },
+    ];
+
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: Array(historyLength).fill(""),
+        datasets: datasets.map((ds) => ({
+          ...ds,
+          fill: false,
+          tension: 0.4,
+          pointRadius: 3,
+          data: Array(historyLength).fill(null),
+        })),
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        scales: { y: { beginAtZero: true, suggestedMax: 150 } },
+      },
+    });
+
+    function generarValores() {
+      return {
+        frecuencia: Math.floor(Math.random() * (120 - 60) + 60),
+        oxigenacion: Math.floor(Math.random() * (100 - 85) + 85),
+        presion: Math.floor(Math.random() * (140 - 90) + 90),
+        ritmo: Math.floor(Math.random() * (120 - 60) + 60),
+        temperatura: parseFloat((Math.random() * (4.5) + 36.0).toFixed(1)),
+      };
+    }
+
+    function evaluarEstado(valores) {
+      const { frecuencia, oxigenacion, presion, ritmo, temperatura } = valores;
+      const enRango = (
+        frecuencia >= 60 && frecuencia <= 100 &&
+        oxigenacion >= 95 &&
+        presion >= 90 && presion <= 120 &&
+        ritmo >= 60 && ritmo <= 100 &&
+        temperatura <= 37.9
+      );
+      if (enRango) return "Estable";
+      if (ultimoEstado === "Empeorando" && enRango) return "Mejorando";
+      return "Empeorando";
+    }
+
+    setInterval(() => {
+      const nuevo = generarValores();
+
+      // Actualizar datos en el gráfico
+      chart.data.datasets[0].data.push(nuevo.frecuencia);
+      chart.data.datasets[1].data.push(nuevo.oxigenacion);
+      chart.data.datasets[2].data.push(nuevo.presion);
+      chart.data.datasets[3].data.push(nuevo.ritmo);
+      chart.data.datasets[4].data.push(nuevo.temperatura);
+      chart.data.datasets.forEach((ds) => {
+        if (ds.data.length > historyLength) ds.data.shift();
+      });
+      chart.update();
+
+      // Mostrar estado
+      const estado = evaluarEstado(nuevo);
+      ultimoEstado = estado;
+      const estadoSpan = document.getElementById("estadoPaciente");
+      estadoSpan.textContent = estado;
+      estadoSpan.className = "fw-bold " + (estado === "Estable" ? "text-success" : estado === "Mejorando" ? "text-warning" : "text-danger");
+
+      // Nivel numérico representativo
+      document.getElementById("numeroEstado").textContent = estado === "Estable" ? "100" : estado === "Mejorando" ? "75" : "40";
+
+      // Mostrar modal si temperatura > 38 cada minuto
+      const ahora = Date.now();
+      if (nuevo.temperatura > 38 && (!modalShownAt || (ahora - modalShownAt > 60000))) {
+        const modal = new bootstrap.Modal(document.getElementById('modalInstrucciones'));
+        modal.show();
+        modalShownAt = ahora;
+      }
+
+    }, 1000);
+  </script>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

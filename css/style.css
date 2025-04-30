@@ -1,0 +1,62 @@
+body {
+    background-color: #669bbc;
+  }  
+.Logo {
+  margin-left: 30px; 
+  margin-top: -120px; 
+}  
+.Tittle {
+  font-size: 100px;
+  margin-left: 30px; 
+  margin-top: 50px; 
+}  
+.subtittle {
+  margin-left: 30px; 
+}  
+.card {
+  margin-top: 50px; 
+  width: 30rem;
+  height: 35rem;
+  border-radius: 16px;
+  background-color: #ffffff9d;
+}  
+.Log {
+  margin-top: 80px; 
+  font-size: 50px;
+}  
+.Log1 {
+  margin-top: 10px; 
+  font-size: 40px;
+}  
+.btn-outline-custom {
+  color: #003049;
+  border-color: #003049;
+}
+.btn-outline-custom:hover {
+  background-color: #003049;
+  color: #fff;
+  border-color: #003049;
+}
+.input-group {
+  margin-top: 25px; 
+}
+.link {
+  text-align: center;
+  display: block;
+  margin-top: 120px; 
+  text-decoration: none;
+}
+.volver-btn-container {
+  position: absolute;
+  border-radius: 16px;
+}
+.navbar-brand {
+  font-weight: bold;
+}
+.card.log {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
