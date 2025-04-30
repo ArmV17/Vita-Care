@@ -92,6 +92,7 @@
     const historyLength = 30;
     let modalShownAt = null;
     let ultimoEstado = "";
+    let temperatura = 36.0;  // Temperatura inicial (en grados Celsius)
 
     const datasets = [
       { label: "Frecuencia Cardiaca", borderColor: "#d00000", backgroundColor: "#d00000", data: [] },
@@ -126,7 +127,7 @@
         oxigenacion: Math.floor(Math.random() * (100 - 85) + 85),
         presion: Math.floor(Math.random() * (140 - 90) + 90),
         ritmo: Math.floor(Math.random() * (120 - 60) + 60),
-        temperatura: parseFloat((Math.random() * (4.5) + 36.0).toFixed(1)),
+        temperatura: parseFloat((temperatura).toFixed(1)),
       };
     }
 
@@ -145,6 +146,11 @@
     }
 
     setInterval(() => {
+      // Aumentamos la temperatura cada minuto
+      if (temperatura < 39) {
+        temperatura += 0.1; // Incremento de la temperatura
+      }
+
       const nuevo = generarValores();
 
       // Actualizar datos en el gráfico
