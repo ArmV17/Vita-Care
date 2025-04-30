@@ -173,10 +173,10 @@
       if (nuevo.temperatura > 38 && (!modalShownAt || (ahora - modalShownAt > 60000))) {
         const modal = new bootstrap.Modal(document.getElementById('modalInstrucciones'));
         modal.show();
-        modalShownAt = ahora;
+        modalShownAt = ahora; // Actualizamos el tiempo de la última alerta
       }
 
-    }, 1000);
+    }, 1000); // Intervalo de 1 segundo
   </script>
 
   <!-- Bootstrap Bundle -->
